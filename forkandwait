@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <signal.h>
+
+int main(){
+	printf("ppid = %d\n", getpid());
+	pid_t pid2, pid3, pid4, pid5, pid6, pid7, pid8, pid9, endpid1, endpid2, endpid3;
+	int status, n;
+
+	pid2 = fork();
+
+	if(pid2 == 0){
+		printf("pid2 = %d\n", getpid());
+		
+		if((pid3 = fork()) == 0){
+			printf("pid3 = %d\n", getpid());
+			sleep(2);
+			printf("pid3 die\n");
+			exit(0);		
+		}
+		if((pid4 = fork()) == 0){
+			printf("pid4 = %d\n", getpid());
+			sleep(2);
+			raise (19);
+			printf("pid4 die\n");
+			exit(0);		
+		}
+		if((pid5 = fork()) == 0){
+			printf("pid5 = %d\n", getpid());
+			sleep(2);
+			printf("pid5 die\n");
+			exit(0);				
+		}
+		
+		printf("child2 wait for childs345\n");
+		endpid1 = waitpid(pid3, &status, NULL);	
+		endpid3 = waitpid(pid5, &status, NULL);
+		n = kill(pid4, 15);
+		if(n == 0) printf("pid4 die\n");
+		printf("pid2 die\n");
+		exit(0);		
+	}
+	
+	else if (pid2 > 0){
+		printf("parent wait for childs26\n");
+		endpid1 = waitpid(pid2, &status, NULL);
+		pid6 = fork();
+
+		if(pid6 == 0){
+			printf("pid6 = %d\n", getpid());
+			if((pid7 = fork()) == 0){
+				printf("pid7 = %d\n", getpid());
+				sleep(2);
+				printf("pid7 die\n");
+				exit(0);
+			}
+			if((pid8 = fork()) == 0){
+				printf("pid8 = %d\n", getpid());
+				sleep(2);
+				printf("pid8 die\n");
+				exit(0);
+			}	
+			if((pid9 = fork()) == 0){
+				printf("pid9 = %d\n", getpid());
+				sleep(2);
+				printf("pid9 die\n");
+				exit(0);
+			}
+			printf("child6 wait for childs789\n");
+			endpid1 = waitpid(pid7, &status, NULL);
+			endpid2 = waitpid(pid8, &status, NULL);
+			endpid3 = waitpid(pid9, &status, NULL);
+			printf("pid6 die\n");
+			exit(0);
+		}	
+		
+		
+		endpid2 = waitpid(pid6, &status, NULL);	
+		printf("ppid die\n");
+		
+	}
+}
